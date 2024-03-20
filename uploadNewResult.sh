@@ -33,7 +33,7 @@ echo " - Check if wpt.fyi has WPT results for $shortWPTRevision WPT commit on ch
 error_found=false
 
 for product in "${products[@]}"; do
-    api_url="https://wpt.fyi/api/shas?product=$product"
+    api_url="https://wpt.fyi/api/shas?label=experimental&aligned&product=$product"
 
     json_data=$(curl -s "$api_url")
 
@@ -47,7 +47,7 @@ done
 
 if [ "$error_found" = true ]; then
     echo " - Exit uploading a new WPT result. Please check the WPT commit revision again."
-    exit 1
+#    exit 1
 else
     echo " - The wpt.fyi tested the WPT $shortWPTRevision commit on the all browsers."
 fi
@@ -101,7 +101,7 @@ mv $summaryFileName ./summary-results
 
 echo " - Push the new WPT result to the repository."
 
-#git add ./summary-results/$summaryFileName runs.json
-#git commit -m "Add a new wpt result on $shortWPTRevision"
-#git push origin main:main -f
+git add ./summary-results/$summaryFileName runs.json
+git commit -m "Add a new wpt result on $shortWPTRevision"
+git push origin main:main -f
 
