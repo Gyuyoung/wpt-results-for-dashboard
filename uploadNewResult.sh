@@ -56,7 +56,7 @@ fi
 ##### Update the major browsers data.
 
 echo " - Update Chrome, Firefox, and Safari browser's WPT results for $shortWPTRevision commit."
-base_api_url="https://wpt.fyi/api/run?sha=$shortWPTRevision&product="
+base_api_url="https://wpt.fyi/api/run?sha=$shortWPTRevision&label=experimental&aligned&product="
 
 for product in "${products[@]}"; do
     old_info=$(cat "$runsFile")
@@ -101,7 +101,7 @@ mv $summaryFileName ./summary-results
 
 echo " - Push the new WPT result to the repository."
 
-git add ./summary-results/$summaryFileName runs.json
-git commit -m "Add a new wpt result on $shortWPTRevision"
-git push origin main:main -f
+#git add ./summary-results/$summaryFileName runs.json
+#git commit -m "Add a new wpt result on $shortWPTRevision"
+#git push origin main:main -f
 
