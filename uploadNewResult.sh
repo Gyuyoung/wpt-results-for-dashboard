@@ -32,7 +32,6 @@ echo "   * test date: $testDate"
 echo "   * browser version: $browserVersion"
 echo "   * resultURL: $resultURL"
 
-
 ##### Check if wpt.fyi has WPT results for the given wpt revision.
 
 echo " - Check if wpt.fyi has WPT results for $shortWPTRevision WPT commit on chrome, firefox, and safari."
@@ -87,7 +86,7 @@ for ((i=0; i<$(echo "$runsJsonData" | jq length); i++)); do
     browser_name=$(echo "$runsJsonData" | jq -r ".[$i].browser_name")
 
     if [ "$browser_name" = "huawei_browser" ]; then
-        runsJsonData=$(echo "$runsJsonData" | jq ".[$i].browser_version = \"$browserVersion\" | .[$i].revision = \"$shortWPTRevision\" | .[$i].results_url = \"$resultURL\" | .[$i].created_at = \"$testCreatedDate\" | .[$i].time_start = \"$testStartDate\" | .[$i].time_end = \"$testEndDate\" | .[$i].raw_results_url = \"$resultURL\" | .[$i].full_revision_hash = \"$wptRevision\" ")
+        runsJsonData=$(echo "$runsJsonData" | jq ".[$i].browser_version = \"$browserVersion\" | .[$i].revision = \"$shortWPTRevision\"  | .[$i].full_revision_hash = \"$wptRevision\" | .[$i].results_url = \"$resultURL\" | .[$i].time_start = \"$testStartTime\" | .[$i].raw_results_url = \"$resultURL\" ")
     fi
 done
 
