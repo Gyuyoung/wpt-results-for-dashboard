@@ -20,13 +20,6 @@ summaryFileName=huawei_browser-$shortWPTRevision-summary_v2.json.gz
 resultURL="https://raw.githubusercontent.com/Gyuyoung/wpt-results-for-dashboard/main/summary-results/$summaryFileName"
 browserVersion="${browserVersion%.json}"
 
-createSuffix="T08:24:46.219172Z"
-startSuffix="T01:23:49.798Z"
-endSuffix="T0429:35.499Z"
-testCreatedTime="${testDate}${createSuffix}"
-testStartTime="${testDate}${startSuffix}"
-testEndTime="${testDate}${endSuffix}"
-
 echo "   * wpt revision: $wptRevision"
 echo "   * test date: $testDate"
 echo "   * browser version: $browserVersion"
@@ -87,8 +80,7 @@ for ((i=0; i<$(echo "$runsJsonData" | jq length); i++)); do
     browser_name=$(echo "$runsJsonData" | jq -r ".[$i].browser_name")
 
     if [ "$browser_name" = "huawei_browser" ]; then
-#        runsJsonData=$(echo "$runsJsonData" | jq ".[$i].browser_version = \"$browserVersion\" | .[$i].revision = \"$shortWPTRevision\" | .[$i].results_url = \"$resultURL\" | .[$i].created_at = \"$testCreatedTime\" | .[$i].time_start = \"$testStartTime\" |.[$i].time_end = \"$testEndTime\" | .[$i].raw_results_url = \"$resultURL\" | .[$i].full_revision_hash = \"$wptRevision\" ")
-        runsJsonData=$(echo "$runsJsonData" | jq ".[$i].browser_version = \"$browserVersion\" | .[$i].revision = \"$shortWPTRevision\" | .[$i].results_url = \"$resultURL\"  | .[$i].created_at = \"$testCreatedTime\"  | .[$i].time_start = \"$testStartTime\" | .[$i].raw_results_url = \"$resultURL\" | .[$i].full_revision_hash = \"$wptRevision\" ")
+        runsJsonData=$(echo "$runsJsonData" | jq ".[$i].browser_version = \"$browserVersion\" | .[$i].revision = \"$shortWPTRevision\" | .[$i].results_url = \"$resultURL\" | .[$i].created_at = \"$testDate\" | .[$i].time_start = \"$testDate\" |.[$i].time_end = \"$testDate\" | .[$i].raw_results_url = \"$resultURL\" | .[$i].full_revision_hash = \"$wptRevision\" ")
     fi
 done
 
