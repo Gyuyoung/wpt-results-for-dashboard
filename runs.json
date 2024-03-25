@@ -83,7 +83,9 @@
       "master",
       "preview"
     ]
-  },
+  }
+],
+[
   {
     "id": 4850786726576128,
     "browser_name": "chrome",
