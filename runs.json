@@ -81,7 +81,8 @@
       "azure",
       "experimental",
       "master",
-      "preview"
+      "preview",
+      "huawei_browser"
     ]
   },
   {
@@ -145,7 +146,8 @@
       "azure",
       "experimental",
       "master",
-      "preview"
+      "preview",
+      "huawei_browser"
     ]
   },
   {
