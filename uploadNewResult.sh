@@ -54,7 +54,7 @@ done
 
 if [ "$error_found" = true ]; then
     echo " - Exit uploading a new WPT result. Please check the WPT commit revision again."
-#    exit 1
+    exit 1
 else
     echo " - The wpt dashboard tested the WPT $shortWPTRevision commit on the all browsers."
 fi
@@ -86,7 +86,7 @@ old_info=$(cat runs.json)
 new_id=$(LC_ALL=C tr -dc '0-9' < /dev/urandom | head -c 16)
 
 huawei_browser_info=$(cat <<EOF
-{"id":"$new_id","browser_name":"huawei_browser","browser_version":"$browserVersion","os_name":"openharmony","os_version":"3.2.3","revision":"$shortWPTRevision","full_revision_hash":"$wptRevision","results_url":"$resultURL","created_at":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_start":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_end":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","raw_results_url":"$resultURL","labels":["azure","experimental","master","preview","huawei_browser"]}
+{"id":$new_id,"browser_name":"huawei_browser","browser_version":"$browserVersion","os_name":"openharmony","os_version":"3.2.3","revision":"$shortWPTRevision","full_revision_hash":"$wptRevision","results_url":"$resultURL","created_at":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_start":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_end":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","raw_results_url":"$resultURL","labels":["azure","experimental","master","preview","huawei_browser"]}
 EOF
 )
 
