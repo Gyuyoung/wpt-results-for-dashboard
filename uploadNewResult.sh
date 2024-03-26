@@ -111,7 +111,7 @@ mv $summaryFileName ./summary-results
 
 echo " - Push the new WPT result to the repository."
 
-git add ./summary-results/$summaryFileName runs.json
-git commit -m "Add a new wpt result on $shortWPTRevision"
-git push origin main:main -f
+#git add ./summary-results/$summaryFileName runs.json
+#git commit -m "Add a new wpt result on $shortWPTRevision"
+#git push origin main:main -f
 
