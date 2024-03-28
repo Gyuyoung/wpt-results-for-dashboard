@@ -14,7 +14,7 @@ WPT_FYI_PATH=$HOME/github/wpt.fyi-open-harmony
 IFS='_' read -r result wptRevision testDate browserVersion <<< "$fileName"
 
 runsFile="runs.json"
-products=("chrome" "firefox" "safari")
+products=("chrome" "chrome_android" "firefox" "safari")
 shortWPTRevision="${wptRevision:0:10}" 
 summaryFileName=huawei_browser-$shortWPTRevision-summary_v2.json.gz
 resultURL="https://raw.githubusercontent.com/Gyuyoung/wpt-results-for-dashboard/main/summary-results/$summaryFileName"
@@ -35,7 +35,7 @@ echo "   * resultURL: $resultURL"
 
 ##### Check if the wpt dashboard has WPT results for the given wpt revision.
 
-echo " - Check if wpt dashboard has WPT results for $shortWPTRevision WPT commit on chrome, firefox, and safari."
+echo " - Check if wpt dashboard has WPT results for $shortWPTRevision WPT commit on chrome, chrome_android, firefox, and safari."
 
 error_found=false
 
@@ -62,7 +62,7 @@ fi
 
 ##### Update the major browsers data.
 
-echo " - Update Chrome, Firefox, and Safari browser's WPT results for $shortWPTRevision commit."
+echo " - Update Chrome, Chrome Android, Firefox, and Safari browser's WPT results for $shortWPTRevision commit."
 base_api_url="https://wpt.fyi/api/run?sha=$shortWPTRevision&label=experimental&aligned&product="
 
 for product in "${products[@]}"; do
@@ -111,7 +111,7 @@ mv $summaryFileName ./summary-results
 
 echo " - Push the new WPT result to the repository."
 
-#git add ./summary-results/$summaryFileName runs.json
-#git commit -m "Add a new wpt result on $shortWPTRevision"
-#git push origin main:main -f
+git add ./summary-results/$summaryFileName runs.json
+git commit -m "Add a new wpt result on $shortWPTRevision"
+git push origin main:main -f
 
