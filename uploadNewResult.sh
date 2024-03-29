@@ -19,9 +19,9 @@ shortWPTRevision="${wptRevision:0:10}"
 summaryFileName=huawei_browser-$shortWPTRevision-summary_v2.json.gz
 resultURL="https://raw.githubusercontent.com/Gyuyoung/wpt-results-for-dashboard/main/summary-results/$summaryFileName"
 browserVersion="${browserVersion%.json}"
-testCreatedAtTime="$(date -u +"${testDate}T%H:%M:%S.%NZ")"
 testStartTime="$(date -u +"${testDate}T%H:%M:%S.%NZ")"
 testEndTime="$(date -u +"${testDate}T%H:%M:%S.%NZ")"
+testCreatedAtTime="$(date -u +"${testDate}T%H:%M:%S.%NZ")"
 
 echo "   * wpt revision: $wptRevision"
 echo "   * test date: $testDate"
@@ -80,10 +80,12 @@ done
 echo " - Update Huawei browser's WPT result for $shortWPTRevision commit."
 
 old_info=$(cat runs.json)
-new_id=$(LC_ALL=C tr -dc '0-9' < /dev/urandom | head -c 16)
+SEED=$(date +%s)
+LC_ALL=C
+new_id=$(echo "$SEED" | sha256sum | tr -dc '0-9' | head -c 16)
 
 huawei_browser_info=$(cat <<EOF
-{"id":$new_id,"browser_name":"huawei_browser","browser_version":"$browserVersion","os_name":"openharmony","os_version":"3.2.3","revision":"$shortWPTRevision","full_revision_hash":"$wptRevision","results_url":"$resultURL","created_at":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_start":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","time_end":"$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ")","raw_results_url":"$resultURL","labels":["azure","experimental","master","preview","huawei_browser"]}
+{"id":$new_id,"browser_name":"huawei_browser","browser_version":"$browserVersion","os_name":"openharmony","os_version":"3.2.3","revision":"$shortWPTRevision","full_revision_hash":"$wptRevision","results_url":"$resultURL","created_at":"$testCreatedAtTime","time_start":"$testStartTime","time_end":"$testEndTime","raw_results_url":"$resultURL","labels":["azure","experimental","master","preview","huawei_browser"]}
 EOF
 )
 
