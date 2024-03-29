@@ -1,71 +1,80 @@
 #!/bin/bash
- 
+
+##########################################################################################
+# Script Name: uploadNewWPTResult.sh
+# Description: This script uploads new WPT (Web Platform Tests) results to the repository.
+# Author: Gyuyoung Kim
+# Date: 2024-04-25
+# Version: 1.0
+##########################################################################################
+
+print_error() {
+  echo "Error: $1" >&2
+  exit 1
+}
+
+show_usage() {
+  echo "Usage: uploadNewWPTResult.sh [result file]"
+  echo "  e.g) ./uploadNewWPTResult.sh ../wpt-runner-results/result_b847b1030f779d681c955f397a6e36bf6808cd41_1.3.4.json"
+  echo ""
+  echo "Usage: uploadNewWPTResult.sh [option]"
+  echo "Options:"
+  echo "  --show-revisions                                Show short revisions that have all WPT results in wpt.fyi staging server"
+  echo "  --get-full-revision-from [short revision]       Get a full revision corresponding to the given short revision"
+  exit 1
+}
+
 if [ $# -eq 0 ]; then
-    echo "No argument. You can check the usages by '--help' option."
-    exit 1
+  print_error "No argument. You can check the usages by '--help' option."
 fi
 
-if [ "$#" -lt 1 ] || [ "$1" == "--help" ] || [ "$1" == "-h" ]
-then
-   echo "Usage : uploadNewWPTResult.sh [result file]"
-   echo "  e.g) ./uploadNewWPTResult.sh ../wpt-runner-results/result_b847b1030f779d681c955f397a6e36bf6808cd41_2024-03-27_1.3.4.json"
-   echo ""
-   echo "Usage : uploadNewWPTResult.sh [option]"
-   echo "Options:"
-   echo "  --show-revisions                            Show short revisions that have all WPT results in wpt.fyi staging server"
-   echo "  --show-full-revision [short revision]       Show a full revision hash corresponding to the given short revision"
-   exit 1
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+  show_usage
 fi
 
 
 ##### Check if arguments are valid.
 
-valid_args=(" .json" "--show-revisions" "--show-full-revision")
+valid_args=(" .json" "--show-revisions" "--get-full-revision-from")
 is_valid_arg=false
 if [[ "$1" == *.json ]]; then
-    is_valid_arg=true
-elif [[ "$1" == "--show-revisions" || "$1" == "--show-full-revision" ]]; then
-    is_valid_arg=true
+  is_valid_arg=true
+elif [[ "$1" == "--show-revisions" || "$1" == "--get-full-revision-from" ]]; then
+  is_valid_arg=true
 fi
 
 if ! $is_valid_arg; then
-    echo "Unsupported argument. Please check the usages by '--help' option."
-    exit 1
+  print_error "Unsupported argument. Please check the usages by '--help' option."
 fi
 
 
-##### Support '--show-revisions' and '--show-full-revision' arguments.
+##### Support '--show-revisions' and '--get-full-revision-from' arguments.
 
 if [ "$1" == "--show-revisions" ]
 then
-    sha_url="https://wpt.fyi/api/shas?label=master&max-count=100&from=2024-03-21T00%3A00&product=chrome%5Bexperimental%5D&product=firefox%5Bexperimental%5D&product=safari%5Bexperimental%5D&product=chrome_android&aligned"
-    sha_list=$(curl -s "$sha_url")
-    echo "$sha_list"
-    exit 1
+  sha_url="https://wpt.fyi/api/shas?label=master&max-count=100&from=2024-03-21T00%3A00&product=chrome%5Bexperimental%5D&product=firefox%5Bexperimental%5D&product=safari%5Bexperimental%5D&product=chrome_android&aligned"
+  sha_list=$(curl -s "$sha_url")
+  echo "$sha_list"
+  exit 1
 fi
 
-if [ "$1" == "--show-full-revision" ]
+if [ "$1" == "--get-full-revision-from" ]
 then
-    if [ -z "$2" ]; then
-        echo "Error: This option needs a short revision in the second argument. You can find short revisions through '--show-revisions' option"
-        echo "Usage: ./uploadNewWPTResult.sh --get-full-revision [short revision]"
-        exit 1
-    fi
-
-    chrome_run_data=$(curl -s "https://wpt.fyi/api/run?sha=$2&label=experimental&aligned&product=chrome")
-    full_revision_hash=$(echo "${chrome_run_data}" | jq -r '.full_revision_hash')
-
-    echo "Full revision hash: ${full_revision_hash}"
-    echo "Suggested a result file name for this revision: result_${full_revision_hash}_1.3.4.json"
+  if [ -z "$2" ]; then
+    echo "Error: This option needs a short revision in the second argument. You can find short revisions through '--show-revisions' option"
+    echo "Usage: ./uploadNewWPTResult.sh --get-full-revision-from [short revision]"
     exit 1
-fi
+  fi
 
+  chrome_run_data=$(curl -s "https://wpt.fyi/api/run?sha=$2&label=experimental&aligned&product=chrome")
+  full_revision_hash=$(echo "${chrome_run_data}" | jq -r '.full_revision_hash')
+
+  echo "Full revision hash: ${full_revision_hash}"
+  echo "Suggested a result file name for this revision: result_${full_revision_hash}_1.3.4.json"
+  exit 1
+fi
 
 file_name=$(basename "$1")
-echo " - The result filename: $file_name"
-
-WPT_FYI_PATH=$HOME/github/wpt.fyi-open-harmony
-
 IFS='_' read -r result wpt_revision browser_version <<< "$file_name"
 
 runs_file="runs.json"
@@ -75,60 +84,60 @@ summary_file_name=huawei_browser-$short_wpt_revision-summary_v2.json.gz
 result_url="https://raw.githubusercontent.com/Gyuyoung/wpt-results-for-dashboard/main/summary-results/$summary_file_name"
 browser_version="${browser_version%.json}"
 
-echo "   * wpt revision: $wpt_revision"
-echo "   * browser version: $browser_version"
-echo "   * result_url: $result_url"
+echo "  - The result filename: $file_name"
+echo "  - wpt full revision: $wpt_revision"
+echo "  - browser version: $browser_version"
+echo "  - result_url: $result_url"
 
 
 ##### Check if the wpt dashboard has WPT results for the given wpt revision.
 
-echo " - Check if wpt dashboard has WPT results for $short_wpt_revision WPT commit on chrome, chrome_android, firefox, and safari."
+echo "> Check if wpt dashboard has WPT results for $short_wpt_revision WPT commit on chrome, chrome_android, firefox, and safari."
 
 error_found=false
 
 for product in "${products[@]}"; do
-    api_url="https://wpt.fyi/api/shas?label=experimental&aligned&product=$product"
+  api_url="https://wpt.fyi/api/shas?label=experimental&aligned&product=$product"
 
-    json_data=$(curl -s "$api_url")
+  json_data=$(curl -s "$api_url")
+  contains_revision=$(echo "$json_data" | jq '.[] | select(index("'$short_wpt_revision'"))')
 
-    contains_revision=$(echo "$json_data" | jq '.[] | select(index("'$short_wpt_revision'"))')
-
-    if [ -z "$contains_revision" ]; then
-        echo " - $short_wpt_revision commit was not tested by $product wpt.fyi."
-        error_found=true
-    fi
+  if [ -z "$contains_revision" ]; then
+      echo "  '$short_wpt_revision' commit was not tested by $product wpt.fyi."
+      error_found=true
+  fi
 done
 
 if [ "$error_found" = true ]; then
-    echo " - Exit uploading a new WPT result. Please check the WPT commit revision again."
-    exit 1
+  echo "> Exit uploading a new WPT result. Please check the WPT commit revision again."
+  exit 1
 else
-    echo " - The wpt dashboard tested the WPT $short_wpt_revision commit on the all browsers."
+  echo "> The wpt dashboard tested the WPT $short_wpt_revision commit on the all browsers."
 fi
 
 
 ##### Update the major browsers data.
 
-echo " - Update Chrome, Chrome Android, Firefox, and Safari browser's WPT results for $short_wpt_revision commit."
+echo "> Update Chrome, Chrome Android, Firefox, and Safari browser's WPT results for $short_wpt_revision commit."
 base_api_url="https://wpt.fyi/api/run?sha=$short_wpt_revision&label=experimental&aligned&product="
 
 for product in "${products[@]}"; do
-    old_info=$(cat "$runs_file")
-    api_url="$base_api_url$product"
-    new_info=$(curl -s "$api_url")
-    trimmed_data=$(echo "$old_info" | sed 's/^\[\|\]$//g')
-    updated_info="[
-    $new_info,$trimmed_data
+  old_info=$(cat "$runs_file")
+  api_url="$base_api_url$product"
+  new_info=$(curl -s "$api_url")
+  trimmed_data=$(echo "$old_info" | sed 's/^\[\|\]$//g')
+  updated_info="[
+  $new_info,$trimmed_data
 ]"
 
-    echo "$updated_info" > "$runs_file"
-    echo "   * runs.json is updated by $product information."
+  echo "$updated_info" > "$runs_file"
+  echo "  runs.json is updated by $product information."
 done
 
 
 ##### Update the Huawei browser json data fields.
 
-echo " - Update Huawei browser's WPT result for $short_wpt_revision commit."
+echo "> Update Huawei browser's WPT result for $short_wpt_revision commit."
 
 old_info=$(cat runs.json)
 SEED=$(date +%s)
@@ -157,8 +166,9 @@ echo "$updated_info" > "$runs_file"
 
 ##### Convert the WPT result generated by the WPT runner to the summary format processed by the wpt dashboard tool.
 
-echo " - Convert the runner WPT result to the summary format for the wpt dashboard tool."
+echo "> Convert the runner WPT result to the summary format for the wpt dashboard tool."
 
+WPT_FYI_PATH=$HOME/github/wpt.fyi-open-harmony
 $WPT_FYI_PATH/results-processor/wptreport.py --summary $summary_file_name $1
 gunzip $summary_file_name
 mv ${summary_file_name%.gz} $summary_file_name
@@ -167,7 +177,7 @@ mv $summary_file_name ./summary-results
 
 ##### Push the new WPT result to the repository.
 
-echo " - Push the new WPT result to the repository."
+echo "> Push the new WPT result to the repository."
 
 git add ./summary-results/$summary_file_name runs.json
 git commit -m "Add a new wpt result on $short_wpt_revision"
