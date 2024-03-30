@@ -14,12 +14,12 @@ print_error() {
 }
 
 show_usage() {
-  echo "Usage: uploadNewWPTResult.sh [result file]"
+  echo "usage: uploadNewWPTResult.sh [result file]"
   echo "  e.g) ./uploadNewWPTResult.sh ../wpt-runner-results/result_b847b1030f779d681c955f397a6e36bf6808cd41_1.3.4.json"
   echo ""
-  echo "Usage: uploadNewWPTResult.sh [option]"
-  echo "Options:"
-  echo "  --show-revisions                                Show short revisions that have all WPT results in wpt.fyi staging server"
+  echo "usage: uploadNewWPTResult.sh [option]"
+  echo "options:"
+  echo "  --show-revisions                                Show short revisions of WPT tested in all other browsers"
   echo "  --get-full-revision-from [short revision]       Get a full revision corresponding to the given short revision"
   exit 1
 }
@@ -158,7 +158,7 @@ EOF
 
 trimmed_data=$(echo "$old_info" | sed 's/^\[\|\]$//g')
 updated_info="[
-    $huawei_browser_info,$trimmed_data
+  $huawei_browser_info,$trimmed_data
 ]"
 
 echo "$updated_info" > "$runs_file"
